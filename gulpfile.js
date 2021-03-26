@@ -26,6 +26,14 @@ exports["sass:watch"] = function sass_watch() {
   return gulp.watch('./public/style/*.scss', exports['sass']);
 }
 
-exports['frontend'] = gulp.parallel(exports['pug'], exports['sass'])//, exports['javascript'])
+exports["js"] = function js () {
+  return gulp.src('./public/script/*.js')
+    .pipe(gulp.dest('./dist/script/'));
+};
+exports["js:watch"] = function js_watch() {
+  return gulp.watch('./public/script/*.js', exports['js']);
+}
+
+exports['frontend'] = gulp.parallel(exports['pug'], exports['sass'], exports['js'])
 
 exports.default = exports['frontend']

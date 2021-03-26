@@ -1,0 +1,62 @@
+@import url('https://fonts.googleapis.com/css2?family=Bitter:ital@0;1&display=swap'); // TODO: remove me
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Roboto+Mono&display=swap');
+
+:root {
+  --bg1: rgb(28, 28, 29);
+  --bg2: rgb(44, 44, 46);
+  --bg3: rgb(56, 56, 59);
+  --bg4: rgb(80, 81, 85);
+  --bg5: rgb(102, 104, 109);
+
+  --fg1: white;
+  --fg2: rgb(224, 219, 206);
+  --fg3: rgb(182, 178, 168);
+  --fg4: rgb(136, 133, 125);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  background: var(--bg1);
+  color: var(--fg1);
+  font-family: 'Poppins', sans-serif;
+  height: 100%;
+}
+
+p {
+  font-family: 'Poppins', serif;
+  text-align: justify;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+
+  justify-content: center;
+  align-content: flex-start;
+  padding: 0 10%;
+  grid-template-columns: 1fr;
+}
+
+header {
+  grid-column: 2 / 3;
+  grid-row: 1 / 2;
+}
+
+a {
+  padding: 1px 2px;
+  color: var(--fg2);
+  border-bottom: 1px solid currentColor;
+
+  cursor: pointer;
+
+  &:hover, &:active {
+    color: var(--bg2);
+    background: var(--fg2);
+    // border-bottom: 1px solid var(--fg2);
+  }
+}
