@@ -42,6 +42,7 @@ const intervals = [
 
 const state = {
   started: false,
+  failed: false,
   canGuess: false,
   endTime: 0,
 
@@ -49,11 +50,12 @@ const state = {
   total: 0,
   answer: 0,
 
-  index: 5,
+  index: -1,
   freqA: 0,
   freqB: 0,
   interval: 0,
 
+  correctSemi: 0,
   finalDiff: (440 * intervals[intervals.length-1][1]) - 440,
 
   volume: 0.5,
@@ -127,21 +129,55 @@ const createTest = () => {
 
 const start = () => {
   state.started = true;
+  state.failed = false;
+  state.canGuess = false;
+  state.endTime = 0;
+
+  state.correct = 0;
+  state.total = 0;
+  state.answer = 0;
+
+  state.index = -1;
+  state.freqA = 0;
+  state.freqB = 0;
+  state.interval = 0;
+
+  state.correctSemi = 0;
+  state.finalDiff = (440 * intervals[intervals.length-1][1]) - 440;
   next(true);
+}
+
+const end = () => {
+  dom.menu.className = `out ${(state.started ? 'started' : '')}`;
+  setTimeout(() => {
+    state.started = false;
+    dom.menu.className = "menu";
+    dom.buttons.className = "buttons";
+    if(state.correct == 0)
+      dom.prompt.innerHTML = `Almost!<br> The 2nd tone was ${humanizeInterval(false)} than the 1st.<br>Unfortunately, you didn't get any right, but feel free to try again!`;
+    else 
+      dom.prompt.innerHTML = `Almost!<br> The 2nd tone was ${humanizeInterval(false)} than the 1st.<br>You got <pre>${state.correct}</pre> right, and were able to distinguish intervals all the way down to about <pre>${state.correctSemi.toFixed(2)}</pre> semitones!`;
+    buttons.start.innerText = "Try again?";
+  }, 0.2*1000);
 }
 
 const interval = (fromFrequency, toFrequency) => {
   return 12 * Math.log2(toFrequency / fromFrequency)
 }
 
-const humanizeInterval = () => {
+const humanizeInterval = (correct=true) => {
   const hilo = state.answer ? "higher" : "lower";
   const diff = Math.abs(state.freqB-state.freqA);
-  if (state.index < intervals.length) {
-    return `${intervals[state.index][0]} (${diff.toPrecision(2)}hz) ${hilo}`
-  }
+
   const semitones = Math.abs(interval(state.freqA, state.freqB))
-  return `<pre>${diff.toPrecision(2)}</pre> hz, or roughly <pre>${semitones.toFixed(2)}</pre> semitones ${hilo}`;
+  if (correct) {
+    state.correctSemi = semitones;
+    console.log('new semi')
+  }
+  if (state.index < intervals.length) {
+    return `${intervals[state.index][0]} - <pre>${diff.toFixed(2)}</pre> hz, or about <pre>${semitones.toFixed(2)}</pre> semitones ${hilo}`
+  }
+  return `<pre>${diff.toFixed(2)}</pre> hz, or roughly <pre>${semitones.toFixed(2)}</pre> semitones ${hilo}`;
 } 
 
 const guess = (guess) => {
@@ -149,12 +185,15 @@ const guess = (guess) => {
   if (audioCtx.currentTime <= state.endTime) return;
   if (guess == state.answer) {
     state.correct++;
+  } else {
+    end();
+    return;
   }
   dom.menu.className = `out ${(state.started ? 'started' : '')}`;
   setTimeout(() => {
     dom.menu.className = "started";
     dom.buttons.className = "buttons next";
-    dom.prompt.innerHTML = `${((guess == state.answer) ? 'Correct!' : 'Incorrect!')}<br> The 2nd tone was ${humanizeInterval(state.diff)} than the 1st.`
+    dom.prompt.innerHTML = `Correct!<br> The 2nd tone was ${humanizeInterval()} than the 1st.`
   }, 0.2*1000);
   state.canGuess = false;
 }
